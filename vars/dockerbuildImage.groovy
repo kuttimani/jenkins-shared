@@ -1,13 +1,13 @@
 def call(String dockerfile, String targetName) {
-    node('docker') {
+    node {
         final String registry = 'https://registry.hub.docker.com'
-        final String registryCreds = 'harbor'
+        final String registryCreds = 'dockerhub'
         def image
-        stage('Checkout from Gerrit') {
+        stage('Checkout from github') {
             checkout scm
         }
         stage('Build and Push Docker image') {
-            final String imageVersion = sh(script: "grep build.environment.version ${dockerfile} | cut -d'\"' -f 2", returnStdout: true).trim()
+            final String imageVersion = sh(script: "grep build.version ${dockerfile} | cut -d'="' -f 2", returnStdout: true).trim()
             println "Building image version ${imageVersion}"
             currentBuild.displayName = imageVersion
             docker.withRegistry(registry, registryCreds) {
